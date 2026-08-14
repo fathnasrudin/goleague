@@ -93,7 +93,14 @@ func newGetScoreRequest(name string) *http.Request {
 	return request
 }
 
+func newPostWinRequest(name string) *http.Request{
+	req, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/players/%s", name), nil)
+	return req
+}
+
 func assertResponseBody(t testing.TB, got, want string, ) {
+	t.Helper()
+
 	if got != want {
 		t.Errorf("want %q but got %q", want, got)
 	}
@@ -101,6 +108,8 @@ func assertResponseBody(t testing.TB, got, want string, ) {
 
 
 func assertStatus(t testing.TB, want, got int, ) {
+	t.Helper()
+	
 	if got != want {
 		t.Errorf("want status code %d but got %d", want, got)
 	}
