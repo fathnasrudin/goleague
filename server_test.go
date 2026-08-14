@@ -63,35 +63,38 @@ func TestGETPlayers(t *testing.T) {
 }
 
 func TestStoreWins(t *testing.T) {
-	
+	assertTotalCalls := func(t testing.TB, want, got int) {
+		t.Helper()
+		if want != got {
+			t.Errorf("Record win not working correctly. Want %d calls but got %d", want, got)
+		}
+	}
+
+	assertCorrectWinner := func(t testing.TB, want, got string) {
+		t.Helper()
+		if want != got {
+			t.Errorf("Did not store correct winner. Want %q but got %q", want, got)
+		}
+	}
 
 	t.Run("it records wins when POST", func(t *testing.T) {
 		store := &StubPlayerStore{scores: map[string]int{}}
 		server := &PlayerServer{store: store}
+		player := "pepper"
 
-		request, _ := http.NewRequest(http.MethodPost, "/players/pepper", nil)
 		response := httptest.NewRecorder()
-
-		server.ServeHTTP(response, request)
+		server.ServeHTTP(response, newPostWinRequest(player))
 
 		assertStatus(t, http.StatusAccepted, response.Code)
-		
-		if len(store.winCalls) != 1 {
-			t.Errorf("Record win not working correctly. Want 1 calls but got %d", 
-			len(store.winCalls) )
-		}
-
-		if store.winCalls[0] != "pepper" {
-			t.Errorf("Did not store correct winner. Want %q but got %q", 
-			"pepper", store.winCalls[0])
-		}
+		assertTotalCalls(t, 1, len(store.winCalls))
+		assertCorrectWinner(t, "pepper", store.winCalls[0])
 	})
 
 	t.Run("handle store win concurrently", func(t *testing.T) {
 		store := &StubPlayerStore{scores: map[string]int{}}
 		server := &PlayerServer{store: store}
-		
-		request, _ := http.NewRequest(http.MethodPost, "/players/pepper", nil)
+		player := "pepper"
+
 		response := httptest.NewRecorder()
 		totalReq := 3
 
@@ -100,7 +103,7 @@ func TestStoreWins(t *testing.T) {
 
 		for range totalReq {
 			go func(){
-				server.ServeHTTP(response, request)
+				server.ServeHTTP(response, newPostWinRequest(player))
 				wg.Done()
 			}()
 		}
@@ -108,16 +111,8 @@ func TestStoreWins(t *testing.T) {
 		wg.Wait()
 
 		assertStatus(t, http.StatusAccepted, response.Code)
-		
-		if len(store.winCalls) != totalReq {
-			t.Errorf("Record win not working correctly. Want %d calls but got %d", 
-			totalReq, len(store.winCalls) )
-		}
-
-		if store.winCalls[0] != "pepper" {
-			t.Errorf("Did not store correct winner. Want %q but got %q", 
-			"pepper", store.winCalls[0])
-		}
+		assertTotalCalls(t, totalReq, len(store.winCalls))
+		assertCorrectWinner(t, player, store.winCalls[0])
 	})
 }
 
