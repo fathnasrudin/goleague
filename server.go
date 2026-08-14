@@ -8,6 +8,13 @@ import (
 
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	player := strings.TrimPrefix(r.URL.Path, "/players/")
+
+	// handle post method
+	if r.Method == http.MethodPost {
+		w.WriteHeader(http.StatusAccepted)
+		return
+	} 
+
 	score := p.store.GetPlayerScore(player)
 
 	// handle if player score not exist

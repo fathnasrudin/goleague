@@ -56,6 +56,20 @@ func TestGETPlayers(t *testing.T) {
 	})
 }
 
+func TestStoreWins(t *testing.T) {
+	store := &StubPlayerStore{scores: map[string]int{}}
+	server := &PlayerServer{store: store}
+
+	t.Run("it returns accepted on POST", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodPost, "/players/pepper", nil)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assertStatus(t, http.StatusAccepted, response.Code)
+	})
+}
+
 func newGetScoreRequest(name string) *http.Request {
 	url := fmt.Sprintf("/players/%s", name)
 	request, _:= http.NewRequest(http.MethodGet, url, nil)
