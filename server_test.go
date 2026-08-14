@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"testing"
 )
 
@@ -62,10 +63,12 @@ func TestGETPlayers(t *testing.T) {
 }
 
 func TestStoreWins(t *testing.T) {
-	store := &StubPlayerStore{scores: map[string]int{}}
-	server := &PlayerServer{store: store}
+	
 
 	t.Run("it records wins when POST", func(t *testing.T) {
+		store := &StubPlayerStore{scores: map[string]int{}}
+		server := &PlayerServer{store: store}
+
 		request, _ := http.NewRequest(http.MethodPost, "/players/pepper", nil)
 		response := httptest.NewRecorder()
 
@@ -84,7 +87,38 @@ func TestStoreWins(t *testing.T) {
 		}
 	})
 
-	
+	t.Run("handle store win concurrently", func(t *testing.T) {
+		store := &StubPlayerStore{scores: map[string]int{}}
+		server := &PlayerServer{store: store}
+		
+		request, _ := http.NewRequest(http.MethodPost, "/players/pepper", nil)
+		response := httptest.NewRecorder()
+		totalReq := 3
+
+		var wg sync.WaitGroup
+		wg.Add(totalReq)
+
+		for range totalReq {
+			go func(){
+				server.ServeHTTP(response, request)
+				wg.Done()
+			}()
+		}
+
+		wg.Wait()
+
+		assertStatus(t, http.StatusAccepted, response.Code)
+		
+		if len(store.winCalls) != totalReq {
+			t.Errorf("Record win not working correctly. Want %d calls but got %d", 
+			totalReq, len(store.winCalls) )
+		}
+
+		if store.winCalls[0] != "pepper" {
+			t.Errorf("Did not store correct winner. Want %q but got %q", 
+			"pepper", store.winCalls[0])
+		}
+	})
 }
 
 func newGetScoreRequest(name string) *http.Request {
