@@ -6,6 +6,15 @@ import (
 	"strings"
 )
 
+type PlayerStore interface {
+	GetPlayerScore(name string) int
+	RecordWin(name string)
+}
+
+type PlayerServer struct {
+	store PlayerStore
+}
+
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -33,11 +42,3 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 }
 
-type PlayerServer struct {
-	store PlayerStore
-}
-
-type PlayerStore interface {
-	GetPlayerScore(name string) int
-	RecordWin(name string)
-}
