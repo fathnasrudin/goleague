@@ -134,7 +134,7 @@ func TestLeague(t *testing.T) {
 	
 
 	t.Run("it returns league table as JSON", func(t *testing.T) {
-		req := getLeagueRequest()
+		req := newGetLeagueRequest()
 		res := httptest.NewRecorder()
 
 		server.ServeHTTP(res, req)
@@ -171,7 +171,7 @@ func assertContentType(t testing.TB, want string, response *httptest.ResponseRec
 	}
 }
 
-func getLeagueRequest() *http.Request {
+func newGetLeagueRequest() *http.Request {
 	request, _:=  http.NewRequest(http.MethodGet, "/league", nil)
 	return request
 }
