@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"sync"
 	"testing"
 )
@@ -11,6 +13,7 @@ import (
 type StubPlayerStore struct {
 	scores map[string]int
 	winCalls []string
+	league []Player
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -20,6 +23,10 @@ func (s *StubPlayerStore) GetPlayerScore(name string) int {
 
 func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
+}
+
+func (s *StubPlayerStore) GetLeague() []Player {
+	return s.league
 }
 
 func TestGETPlayers(t *testing.T) {
@@ -117,16 +124,30 @@ func TestStoreWins(t *testing.T) {
 }
 
 func TestLeague(t *testing.T) {
-	store := &StubPlayerStore{}
+	wantedLeague := []Player{
+		{Name: "John", Wins: 20},
+		{Name: "Downey", Wins: 10},
+	}
+	store := &StubPlayerStore{league: wantedLeague}
 	server := NewPlayerServer(store)
+	
 
-	t.Run("It should return status 200", func(t *testing.T) {
+	t.Run("it returns league table as JSON", func(t *testing.T) {
 		req, _ := http.NewRequest(http.MethodGet, "/league", nil)
 		res := httptest.NewRecorder()
 
 		server.ServeHTTP(res, req)
+		var got []Player
+
+		err := json.NewDecoder(res.Body).Decode(&got)
+		if err != nil {
+			t.Fatalf("Unable to parse response from server %q into slice of Player, %v", res.Body, err)
+		}
 
 		assertStatus(t, http.StatusOK, res.Code)		
+		if !reflect.DeepEqual(got, wantedLeague) {
+			t.Errorf("Want %v but got %v", wantedLeague, got)
+		}
 	})
 }
 

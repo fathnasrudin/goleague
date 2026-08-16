@@ -5,6 +5,7 @@ import "sync"
 type InMemoryPlayerStore struct {
 	mu sync.Mutex
 	scores map[string]int
+	league []Player
 }
 
 func NewInMemoryPlayerStore() *InMemoryPlayerStore {
@@ -20,4 +21,8 @@ func (s *InMemoryPlayerStore) RecordWin(name string) {
 
 	defer s.mu.Unlock()
 	s.scores[name]++
+}
+
+func (s *InMemoryPlayerStore) GetLeague() []Player {
+	return nil
 }
