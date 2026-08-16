@@ -7,7 +7,7 @@ import (
 )
 
 func TestRecordingsWinsAndRetrievingThem(t *testing.T) {
-	server := &PlayerServer{store: NewInMemoryPlayerStore()}
+	server := NewPlayerServer(NewInMemoryPlayerStore())
 	player := "pepper"
 
 	// call 3 times should have 3 score
