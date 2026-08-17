@@ -26,7 +26,12 @@ func (s *FileSystemPlayerStore) GetPlayerScore(name string) int {
 func (s *FileSystemPlayerStore) ProcessWin(name string) error {
 	league := s.GetLeague()
 	p := league.Find(name)
-	p.Wins++
+	
+	if p != nil {
+		p.Wins++
+	} else {
+		league = append(league, Player{name, 1})
+	}
 	
 	s.database.Seek(0, io.SeekStart)
 	return json.NewEncoder(s.database).Encode(league)
