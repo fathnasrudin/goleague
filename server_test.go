@@ -157,6 +157,8 @@ func getLeagueFromResponse(t testing.TB, body io.Reader) (league []Player) {
 }
 
 func assertLeague(t testing.TB, want, got []Player) {
+	t.Helper()
+	
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Want %v but got %v", want, got)
 	}
