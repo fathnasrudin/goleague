@@ -7,7 +7,7 @@ import (
 )
 
 func TestFileSystemStore(t *testing.T) {
-	t.Run("Get League with double read", func(t *testing.T) {
+	t.Run("Get League from a reader", func(t *testing.T) {
 		database, removeFile := createTempFile(t, `[
 		{"Name": "Cleo", "Wins": 10},
 		{"Name": "Chris", "Wins": 33}
