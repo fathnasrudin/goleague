@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"io"
-	"log"
 )
 
 type FileSystemPlayerStore struct {
@@ -11,10 +9,6 @@ type FileSystemPlayerStore struct {
 }
 
 func (s *FileSystemPlayerStore) GetLeague() []Player {
-	var league []Player
-	err := json.NewDecoder(s.database).Decode(&league)
-	if err != nil {
-		log.Fatalf("Failed to parse %v to JSON. %q", s.database, err)
-	}
+	league, _ := NewLeague(s.database)
 	return league
 }

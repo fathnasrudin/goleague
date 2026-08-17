@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -73,3 +74,11 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 }
 
+func NewLeague(r io.Reader) ([]Player, error ){
+	var league []Player
+	err := json.NewDecoder(r).Decode(&league)
+	if err != nil {
+		 err = fmt.Errorf("Problem parsing league, %v", err)
+	}
+	return league, err
+}
