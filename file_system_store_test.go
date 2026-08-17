@@ -41,6 +41,22 @@ func TestFileSystemStore(t *testing.T) {
 
 		assertScoreEquals(t, want, got)
 	})
+
+	t.Run("store wins for existing player", func(t *testing.T) {
+		database, removeFile := createTempFile(t, `[
+			{"Name": "Cleo", "Wins": 10},
+			{"Name": "Chris", "Wins": 33}
+			]`)
+		defer removeFile()
+		
+		store := FileSystemPlayerStore{database}
+
+		store.ProcessWin("Chris")
+		got := store.GetPlayerScore("Chris")
+		want := 34
+
+		assertScoreEquals(t, want, got)
+	})
 }
 
 func createTempFile(t testing.TB, initialData string) (file io.ReadWriteSeeker, removeFile func()) {
