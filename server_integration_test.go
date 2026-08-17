@@ -7,7 +7,11 @@ import (
 )
 
 func TestRecordingsWinsAndRetrievingThem(t *testing.T) {
-	server := NewPlayerServer(NewInMemoryPlayerStore())
+	database, removeFile := createTempFile(t, "")
+	defer removeFile()
+	
+	store := &FileSystemPlayerStore{database: database}
+	server := NewPlayerServer(store)
 	player := "pepper"
 
 	// call 3 times should have 3 score
