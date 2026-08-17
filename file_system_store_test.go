@@ -51,7 +51,7 @@ func TestFileSystemStore(t *testing.T) {
 		
 		store := FileSystemPlayerStore{database}
 
-		store.ProcessWin("Chris")
+		store.RecordWin("Chris")
 		got := store.GetPlayerScore("Chris")
 		want := 34
 
@@ -67,12 +67,12 @@ func TestFileSystemStore(t *testing.T) {
 		
 		store := FileSystemPlayerStore{database}
 
-		store.ProcessWin("Anto")
+		store.RecordWin("Anto")
 		got := store.GetPlayerScore("Anto")
 		want := 1
 		assertScoreEquals(t, want, got)
 
-		store.ProcessWin("Anto")
+		store.RecordWin("Anto")
 		assertScoreEquals(t, 2, store.GetPlayerScore("Anto"))
 	})
 }
