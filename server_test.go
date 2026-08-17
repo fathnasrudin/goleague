@@ -205,3 +205,11 @@ func assertStatus(t testing.TB, want, got int, ) {
 		t.Errorf("want status code %d but got %d", want, got)
 	}
 }
+
+func assertScoreEquals(t testing.TB, want, got int) {
+	t.Helper()
+	
+	if got != want {
+		t.Errorf("Want %d but got %d", want, got)
+	}
+}
