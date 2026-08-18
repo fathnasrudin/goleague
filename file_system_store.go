@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"slices"
 )
 
 type FileSystemPlayerStore struct {
@@ -29,6 +30,12 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 }
 
 func (s *FileSystemPlayerStore) GetLeague() League {
+
+	// sort with highest wins first
+	slices.SortFunc(s.league, func(a, b Player) int {
+		return b.Wins - a.Wins
+	})
+
 	return s.league
 }
 
