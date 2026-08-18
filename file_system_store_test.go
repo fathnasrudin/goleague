@@ -14,7 +14,7 @@ func TestFileSystemStore(t *testing.T) {
 		]`)
 		defer removeFile()
 
-		store := FileSystemPlayerStore{database}
+		store := NewFileSystemPlayerStore(database)
 		got := store.GetLeague()
 		want := []Player{
 			{"Cleo", 10},
@@ -34,7 +34,7 @@ func TestFileSystemStore(t *testing.T) {
 		]`)
 		defer removeFile()
 		
-		store := FileSystemPlayerStore{database}
+		store := NewFileSystemPlayerStore(database)
 
 		got := store.GetPlayerScore("Chris")
 		want := 33
@@ -49,7 +49,7 @@ func TestFileSystemStore(t *testing.T) {
 			]`)
 		defer removeFile()
 		
-		store := FileSystemPlayerStore{database}
+		store := NewFileSystemPlayerStore(database)
 
 		store.RecordWin("Chris")
 		got := store.GetPlayerScore("Chris")
@@ -65,7 +65,7 @@ func TestFileSystemStore(t *testing.T) {
 			]`)
 		defer removeFile()
 		
-		store := FileSystemPlayerStore{database}
+		store := NewFileSystemPlayerStore(database)
 
 		store.RecordWin("Anto")
 		got := store.GetPlayerScore("Anto")
