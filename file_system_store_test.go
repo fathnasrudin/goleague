@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"os"
 	"testing"
 )
@@ -77,7 +76,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 }
 
-func createTempFile(t testing.TB, initialData string) (file io.ReadWriteSeeker, removeFile func()) {
+func createTempFile(t testing.TB, initialData string) (file *os.File, removeFile func()) {
 	t.Helper()
 
 	tmpFile, err := os.CreateTemp("", "db")
