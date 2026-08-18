@@ -10,7 +10,9 @@ func TestRecordingsWinsAndRetrievingThem(t *testing.T) {
 	database, removeFile := createTempFile(t, "")
 	defer removeFile()
 	
-	store := NewFileSystemPlayerStore(database)
+	store, err := NewFileSystemPlayerStore(database)
+	assertNoError(t, err)
+
 	server := NewPlayerServer(store)
 	player := "pepper"
 
