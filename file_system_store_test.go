@@ -79,6 +79,14 @@ func TestFileSystemStore(t *testing.T) {
 		store.RecordWin("Anto")
 		assertScoreEquals(t, 2, store.GetPlayerScore("Anto"))
 	})
+
+	t.Run("works with an empty file", func(t *testing.T) {
+		database, removeFile := createTempFile(t, ``)
+		defer removeFile()
+		
+		_, err := NewFileSystemPlayerStore(database)
+		assertNoError(t, err)
+	})
 }
 
 func createTempFile(t testing.TB, initialData string) (file *os.File, removeFile func()) {
