@@ -2,7 +2,6 @@ package poker
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"strings"
 )
@@ -12,18 +11,14 @@ type CLI struct {
 	in io.Reader
 }
 
-func (cli *CLI) PlayPoker() error {
-	// extract caller
+func (cli *CLI) PlayPoker() {
 	scanner := bufio.NewScanner(cli.in)
+	scanner.Scan()
+	input := scanner.Text()
+	name := extractWinner(input)
+	cli.store.RecordWin(name)
+}
 
-	for scanner.Scan() {
-		input := scanner.Text()
-		name := strings.TrimSuffix(input, " wins")
-		cli.store.RecordWin(name)
-	}
-
-	if scanner.Err() != nil {
-		return fmt.Errorf("failed when read input cli, %v", scanner.Err())
-	}
-	return nil
+func extractWinner(userInput string) string {
+	return strings.TrimSuffix(userInput, " wins")
 }
