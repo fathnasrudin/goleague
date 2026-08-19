@@ -3,23 +3,17 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	poker "github.com/fath-nasrudin/goleague"
 )
 const dbFileName = "game.db.json"
 func main() {
-	database, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
-
-	if err != nil {
-		log.Fatalf("problem opening %s %v", dbFileName, err)
-	}
-
-	store, err := poker.NewFileSystemPlayerStore(database)
+	store, close, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
 	
 	if err != nil {
-		log.Fatalf("problem creating new file system player store, %v", err)
+		log.Fatal(err)
 	}
+	defer close()
 
 	server := poker.NewPlayerServer(store)
 	
