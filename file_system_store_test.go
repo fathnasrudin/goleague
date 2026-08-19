@@ -14,15 +14,15 @@ func TestFileSystemStore(t *testing.T) {
 		defer removeFile()
 
 		store, err := NewFileSystemPlayerStore(database)
-		assertNoError(t, err)
+		AssertNoError(t, err)
 
 		got := store.GetLeague()
 		want := League{{Name: "Chris", Wins: 33}, {Name: "Cleo", Wins: 10}}
 
-		assertLeague(t, want, got)
+		AssertLeague(t, want, got)
 
 		got = store.GetLeague()
-		assertLeague(t, want, got)
+		AssertLeague(t, want, got)
 	})
 
 	t.Run("Get player score", func(t *testing.T) {
@@ -33,12 +33,12 @@ func TestFileSystemStore(t *testing.T) {
 		defer removeFile()
 		
 		store, err := NewFileSystemPlayerStore(database)
-		assertNoError(t, err)
+		AssertNoError(t, err)
 
 		got := store.GetPlayerScore("Chris")
 		want := 33
 
-		assertScoreEquals(t, want, got)
+		AssertScoreEquals(t, want, got)
 	})
 
 	t.Run("store wins for existing player", func(t *testing.T) {
@@ -49,13 +49,13 @@ func TestFileSystemStore(t *testing.T) {
 		defer removeFile()
 		
 		store, err := NewFileSystemPlayerStore(database)
-		assertNoError(t, err)
+		AssertNoError(t, err)
 
 		store.RecordWin("Chris")
 		got := store.GetPlayerScore("Chris")
 		want := 34
 
-		assertScoreEquals(t, want, got)
+		AssertScoreEquals(t, want, got)
 	})
 
 	t.Run("store wins for new players", func(t *testing.T) {
@@ -66,15 +66,15 @@ func TestFileSystemStore(t *testing.T) {
 		defer removeFile()
 		
 		store, err := NewFileSystemPlayerStore(database)
-		assertNoError(t, err)
+		AssertNoError(t, err)
 
 		store.RecordWin("Anto")
 		got := store.GetPlayerScore("Anto")
 		want := 1
-		assertScoreEquals(t, want, got)
+		AssertScoreEquals(t, want, got)
 
 		store.RecordWin("Anto")
-		assertScoreEquals(t, 2, store.GetPlayerScore("Anto"))
+		AssertScoreEquals(t, 2, store.GetPlayerScore("Anto"))
 	})
 
 	t.Run("works with an empty file", func(t *testing.T) {
@@ -82,7 +82,7 @@ func TestFileSystemStore(t *testing.T) {
 		defer removeFile()
 		
 		_, err := NewFileSystemPlayerStore(database)
-		assertNoError(t, err)
+		AssertNoError(t, err)
 	})
 }
 
@@ -104,12 +104,4 @@ func createTempFile(t testing.TB, initialData string) (file *os.File, removeFile
 	file = tmpFile
 
 	return
-}
-
-func assertNoError(t testing.TB, err error) {
-	t.Helper()
-
-	if err != nil {
-		t.Fatalf("didn't expect an error but got one, %v", err)	
-	}
 }
