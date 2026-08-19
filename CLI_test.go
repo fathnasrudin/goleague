@@ -6,19 +6,37 @@ import (
 )
 
 func TestCLI(t *testing.T) {
-	playerStore := &StubPlayerStore{}
-	in := strings.NewReader("Chris wins\n")
-	cli := &CLI{playerStore, in}
-	cli.PlayPoker()
+	t.Run("Record Chris wins from user input", func(t *testing.T) {
+		playerStore := &StubPlayerStore{}
+		in := strings.NewReader("Chris wins\n")
 
-	got := playerStore.winCalls[0]
-	want := "Chris"
+		cli := &CLI{playerStore, in}
+		cli.PlayPoker()
+		
+		assertPlayerWin(t, playerStore, "Chris")
+	})
 
-	if len(playerStore.winCalls) != 1 {
-		t.Fatalf("want %d calls but got %d", 1, len(playerStore.winCalls))
+	t.Run("Record Anto wins from user input", func(t *testing.T) {
+		playerStore := &StubPlayerStore{}
+		in := strings.NewReader("Anto wins\n")
+		
+		cli := &CLI{playerStore, in}
+		cli.PlayPoker()
+
+		assertPlayerWin(t, playerStore, "Anto")
+	})
+}
+
+func assertPlayerWin(t testing.TB, store *StubPlayerStore, wantWinner string) {
+	t.Helper()
+
+	got := store.winCalls[0]
+
+	if len(store.winCalls) != 1 {
+		t.Fatalf("want %d calls but got %d", 1, len(store.winCalls))
 	}
 
-	if got != want {
-		t.Fatalf("want %q but got %q", want, got)
+	if got != wantWinner {
+		t.Fatalf("want %q as winner but got %q", wantWinner, got)
 	}
 }
