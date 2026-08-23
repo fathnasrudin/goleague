@@ -2,6 +2,8 @@ package poker
 
 import (
 	"bufio"
+	"errors"
+	"fmt"
 	"io"
 	"strings"
 )
@@ -17,7 +19,11 @@ func NewCLI(store PlayerStore, in io.Reader) *CLI {
 
 func (cli *CLI) PlayPoker() {
 	input := cli.readLine()
-	name := extractWinner(input)
+	name, err := extractWinner(input)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	cli.store.RecordWin(name)
 }
 
@@ -26,6 +32,12 @@ func (cli *CLI) readLine() string {
 	return cli.in.Text()
 }
 
-func extractWinner(userInput string) string {
-	return strings.TrimSuffix(userInput, " wins")
+func extractWinner(userInput string) (string, error) {
+	winSuffix := " wins"
+
+	if  !strings.HasSuffix(userInput, winSuffix) {
+		return "", errors.New("failed to record win. Invalid format. should use format {name} wins")
+	}
+
+	return strings.TrimSuffix(userInput, winSuffix), nil
 }
