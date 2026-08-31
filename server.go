@@ -34,12 +34,33 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 	p.store = store
 
 	router := http.NewServeMux()
+	router.Handle("/", http.HandlerFunc(p.rootHandler))
 	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
 	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
 	
 	p.Handler = router
 	return p
 }
+
+
+func (p *PlayerServer) rootHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", jsonContentType)
+
+	response := map[string]any{
+		"endpoints": map[string]any{
+			"/players/{name}": map[string]string{
+				"GET":  "200. Returns total player wins.",
+				"POST": "202. Creates or increments the player wins.",
+			},
+			"/league": map[string]string{
+				"GET": "200. Returns array of player objects.",
+			},
+		},
+	}
+	json.NewEncoder(w).Encode(response)
+	w.WriteHeader(http.StatusOK)
+}
+
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", jsonContentType)
